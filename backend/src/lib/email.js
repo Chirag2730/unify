@@ -5,7 +5,7 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false,
   auth: {
-    user: process.env.EMAIL_USER,
+    user: process.env.BREVO_USER || process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
   tls: {
@@ -18,8 +18,9 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendOTPEmail = async (email, otp, fullName) => {
+  const senderEmail = process.env.SENDER_EMAIL || "noreply.unify194@gmail.com";
   const mailOptions = {
-    from: `"Unify Team" <${process.env.EMAIL_USER}>`,
+    from: `"Unify Team" <${senderEmail}>`,
     to: email,
     subject: "Verify Your Unify Account - OTP",
     html: `
