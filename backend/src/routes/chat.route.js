@@ -11,7 +11,7 @@ const router = express.Router();
 // Apply middleware to all routes
 router.use(protectRoute);
 
-router.get("/token",protectRoute,getStreamToken);
+router.get("/token", getStreamToken);
 
 // Channel routes
 router.get("/channels", getUserChannels);

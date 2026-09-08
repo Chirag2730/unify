@@ -14,9 +14,12 @@ const STREAM_API_KEY = process.env.STREAM_API_KEY;
 const STREAM_API_SECRET = process.env.STREAM_API_SECRET;
 
 if (!STREAM_API_KEY || !STREAM_API_SECRET) {
-  throw new Error("Stream API credentials are required");
+  console.warn("⚠️ Stream API credentials are missing from environment variables.");
 }
-export const streamClient = StreamChat.getInstance(STREAM_API_KEY, STREAM_API_SECRET);
+
+export const streamClient = (STREAM_API_KEY && STREAM_API_SECRET) 
+  ? StreamChat.getInstance(STREAM_API_KEY, STREAM_API_SECRET) 
+  : null;
 
 
 export const generateStreamToken = (userId) => {

@@ -26,7 +26,7 @@ const SignUpPage = () => {
 
   const handleSignup = (e) => {
     e.preventDefault();
-    console.log("Starting signup with data:", signupData);
+    console.log("Starting signup for:", signupData.email);
     
     signupMutation(signupData, {
       onSuccess: (data) => {

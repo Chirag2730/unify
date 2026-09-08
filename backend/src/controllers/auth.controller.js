@@ -24,7 +24,12 @@ export async function signup(req, res) {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "Email already exists, please use a different one" });
+      if (!existingUser.isVerified && existingUser.otpExpires < new Date()) {
+        // User attempted signup previously but didn't verify and OTP expired - delete stale account
+        await User.findByIdAndDelete(existingUser._id);
+      } else {
+        return res.status(400).json({ message: "Email already exists, please use a different one" });
+      }
     }
 
     // Generate OTP
@@ -205,7 +210,12 @@ export async function login(req, res) {
       sameSite: true, // prevent csrf attacks
       secure: process.env.NODE_ENV === "production", //only set cookie on production
     });
-    res.json({ success: true, user });
+    const userObject = user.toObject();
+    delete userObject.password;
+    delete userObject.otp;
+    delete userObject.otpExpires;
+
+    res.json({ success: true, user: userObject });
   } catch (error) {
     console.log("Error in login controller:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -267,7 +277,12 @@ export async function onboard(req, res) {
     }
     
 
-    res.status(200).json({ success: true, user: updatedUser });
+    const userObject = updatedUser.toObject();
+    delete userObject.password;
+    delete userObject.otp;
+    delete userObject.otpExpires;
+
+    res.status(200).json({ success: true, user: userObject });
   } catch (error) {
     console.log("Onboarding error:", error);
     res.status(500).json({ message: "Internal Server Error" });
